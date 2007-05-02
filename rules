@@ -1,0 +1,131 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	# No configuration needed
+
+	touch configure-stamp
+
+
+build: build-stamp
+
+build-stamp: configure-stamp 
+	dh_testdir
+
+	$(MAKE) linux
+	gcc -Wall support/auth/uuencode.c -o support/auth/uuencode
+	gcc -Wall support/auth/uudecode.c -o support/auth/uudecode
+
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	-$(MAKE) clean
+	rm -f support/auth/uuencode
+	rm -f support/auth/uudecode
+
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+
+	# httpd binary itself
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd
+	install -m 0755 httpd $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/httpd
+
+	# Empty required directories
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/htdocs
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/logs
+
+	# Copy over all of cgi-bin and icons
+	cp -R cgi-bin $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/
+	cp -R icons $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/
+
+	# Config files.  All are required (and .conf-dist renamed .conf
+	# accordingly) to start httpd EXCEPT access.conf-dist, so that is
+	# not renamed.
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf
+	install -m 0644 conf/mime.types $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf/mime.types
+	install -m 0644 conf/access.conf-dist $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf/access.conf
+	install -m 0644 conf/httpd.conf-dist $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf/httpd.conf
+	install -m 0644 conf/localhost_srm.conf-dist $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf
+	install -m 0644 conf/srm.conf-dist $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf/srm.conf
+
+	# Support binaries
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/dbm2std $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/dbmdigest $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/dbmgroup $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/dbmpasswd $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/htdigest $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/htpasswd $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/inc2shtml $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/std2dbm $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/unescape $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+	install -m 0755 support/webgrab $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support
+
+	# Support auth binaries
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+	install -m 0755 support/auth/pgp-dec $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+	install -m 0755 support/auth/pgp-enc $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+	install -m 0755 support/auth/ripem-dec $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+	install -m 0755 support/auth/ripem-enc $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+	install -m 0755 support/auth/uudecode $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+	install -m 0755 support/auth/uuencode $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
+
+
+	# Lintian overrides
+	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/share/lintian/overrides
+	install -m 0644 debian/ncsa-httpd.lintian-overrides $(CURDIR)/debian/ncsa-httpd/usr/share/lintian/overrides/ncsa-httpd
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs CHANGES
+	dh_installdocs
+	dh_installexamples
+	dh_installman src/httpd.man
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

@@ -1,0 +1,6 @@
+# NOT distributing in /usr/local/etc/httpd would be no fun
+
+ncsa-httpd: dir-in-usr-local
+ncsa-httpd: dir-in-usr-local
+ncsa-httpd: file-in-usr-local
+ncsa-httpd: file-in-unusual-dir

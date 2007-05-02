@@ -1,0 +1,11 @@
+ncsa-httpd for Debian
+---------------------
+
+In the spirit of nostalgia, all files are in the classic
+directory of /usr/local/etc/httpd.  The main binary is
+/usr/local/etc/httpd/httpd.  Documentation and man pages
+are in the normal places
+
+It's not a good idea to run this in a production environment.
+
+ -- Ryan Finnie <ryan@finnie.org>  Wed,  2 May 2007 11:15:39 -0700

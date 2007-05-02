@@ -1,0 +1,14 @@
+Source: ncsa-httpd
+Section: net
+Priority: extra
+Maintainer: Ryan Finnie <ryan@finnie.org>
+Build-Depends: debhelper (>= 5), libgdbm-dev
+Standards-Version: 3.7.2
+
+Package: ncsa-httpd
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: perl, tclsh
+Description: NCSA HTTPd, a classic web server
+ NCSA HTTPd is an HTTP/1.0 compatible server for making hypertext and other
+ documents available to Web browsers.
