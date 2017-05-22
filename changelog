@@ -1,3 +1,10 @@
+ncsa-httpd (1.5.2a-2) unstable; urgency=medium
+
+  * Updates to allow for compilation here in the flying car
+    future of 2017.
+
+ -- Ryan Finnie <ryan@finnie.org>  Mon, 22 May 2017 02:33:34 +0000
+
 ncsa-httpd (1.5.2a-1) unstable; urgency=low
 
   * Initial release
