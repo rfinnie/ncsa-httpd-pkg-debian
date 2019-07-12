@@ -1,0 +1,9 @@
+httpd_getline.patch
+c99-restrict.patch
+default-user-nobody.patch
+dirfd.patch
+conffiles.patch
+bin-paths.patch
+gdbm_compat.patch
+relative-paths.patch
+ldflags.patch

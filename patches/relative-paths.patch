@@ -1,0 +1,257 @@
+commit 6caa712c3a70c756a57d7921b8ace9f401fb6567
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Tue May 23 22:13:35 2017 +0000
+
+    Use relative paths where possible
+
+diff --git a/cgi-bin/archie b/cgi-bin/archie
+index 9287edf..645f062 100755
+--- a/cgi-bin/archie
++++ b/cgi-bin/archie
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-ARCHIE=/usr/bin/archie
++ARCHIE=archie
+ 
+ 
+ echo Content-type: text/html
+diff --git a/cgi-bin/calendar b/cgi-bin/calendar
+index e51d8ec..4e16dc2 100755
+--- a/cgi-bin/calendar
++++ b/cgi-bin/calendar
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-CAL=/bin/cal
++CAL=cal
+ 
+ echo Content-type: text/html
+ echo
+diff --git a/cgi-bin/date b/cgi-bin/date
+index fcdce04..da75dd6 100755
+--- a/cgi-bin/date
++++ b/cgi-bin/date
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-DATE=/bin/date
++DATE=date
+ 
+ echo Content-type: text/plain
+ echo
+diff --git a/cgi-bin/finger b/cgi-bin/finger
+index 84f8fb5..71986af 100755
+--- a/cgi-bin/finger
++++ b/cgi-bin/finger
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-FINGER=/usr/bin/finger
++FINGER=finger
+ 
+ echo Content-type: text/html
+ echo
+diff --git a/cgi-bin/mail b/cgi-bin/mail
+index 55dca19..6f41a92 100755
+--- a/cgi-bin/mail
++++ b/cgi-bin/mail
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ # ======================================================================
+ # WebMonitor Standalone Module: mail
+diff --git a/cgi-bin/nph-error.pl b/cgi-bin/nph-error.pl
+index 73f90d6..650eda9 100755
+--- a/cgi-bin/nph-error.pl
++++ b/cgi-bin/nph-error.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # Non-parsed headers CGI 1.1 error script in Perl to handle error requests
+ # from NCSA HTTPd 1.4 via ErrorDocument.  This should handle all errors in 
+diff --git a/cgi-bin/redirect b/cgi-bin/redirect
+index 4ac40d4..66f9e15 100755
+--- a/cgi-bin/redirect
++++ b/cgi-bin/redirect
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # redirect -- PERL redirection script
+ #
+diff --git a/cgi-bin/test-cgi.tcl b/cgi-bin/test-cgi.tcl
+index 18fdb6e..e275866 100755
+--- a/cgi-bin/test-cgi.tcl
++++ b/cgi-bin/test-cgi.tcl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/tclsh
++#!/usr/bin/env tclsh
+ # tcl-cgi.tcl
+ # robert.bagwill@nist.gov, no warranty, no rights reserved
+ # print out command line args, stdin, and environment variables
+diff --git a/cgi-bin/uptime b/cgi-bin/uptime
+index f56c77d..a3ba3a9 100755
+--- a/cgi-bin/uptime
++++ b/cgi-bin/uptime
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-UPTIME=/usr/bin/uptime
++UPTIME=uptime
+ 
+ echo Content-type: text/plain
+ echo
+diff --git a/cgi-bin/wais.pl b/cgi-bin/wais.pl
+index 991d2a7..286c5d0 100755
+--- a/cgi-bin/wais.pl
++++ b/cgi-bin/wais.pl
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # wais.pl -- WAIS search interface
+ #
+@@ -10,7 +10,7 @@
+ #     map topdir wais.pl &do_wais($top, $path, $query, "database", "title")
+ #
+ 
+-$waisq = "/usr/bin/waisq";
++$waisq = "waisq";
+ $waisd = "/u/Web/wais-sources";
+ $src = "www";
+ $title = "NCSA httpd documentation";
+diff --git a/cgi-src/Makefile b/cgi-src/Makefile
+index e6a60c0..3c5a758 100644
+--- a/cgi-src/Makefile
++++ b/cgi-src/Makefile
+@@ -8,7 +8,7 @@ CC= gcc
+ #For debugging
+ CFLAGS= -g
+ 
+-RM= /bin/rm -f
++RM= rm -f
+ #--- You shouldn't have to edit anything else. ---
+ 
+ .c.o: 
+diff --git a/cgi-src/jj.c b/cgi-src/jj.c
+index bd5a124..ea30dfb 100644
+--- a/cgi-src/jj.c
++++ b/cgi-src/jj.c
+@@ -228,7 +228,7 @@ main(int argc, char *argv[]) {
+ 
+     if(allow) {
+         char t[256];
+-        sprintf(t,"/bin/mail %s",JJ_FAX);
++        sprintf(t,"/usr/bin/env mail %s",JJ_FAX);
+         if(!(order=popen(t,"w")))
+             print_error("the server was unable to open a pipe to mail");
+         printf("<TITLE>Order Sent</TITLE>%c",LF);
+diff --git a/cgi-src/phf.c b/cgi-src/phf.c
+index 5f15c90..6070ab6 100644
+--- a/cgi-src/phf.c
++++ b/cgi-src/phf.c
+@@ -181,7 +181,7 @@ main(int argc, char *argv[]) {
+ 
+     if (!atleastonequery) printf("<B>You did not enter a query!</B>%c",LF);
+     else {
+-        strcpy(commandstr, "/usr/bin/ph -m ");
++        strcpy(commandstr, "/usr/bin/env ph -m ");
+         if (strlen(serverstr)) {
+            strcat(commandstr, " -s ");
+            /* RM 2/22/94 oops */
+diff --git a/src/config.h b/src/config.h
+index c3f6db4..c2c6638 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -142,7 +142,7 @@
+ /* DEFAULT_PATH defines the default search PATH handed to CGI scripts
+    if there isn't one in the environment when HTTPd runs */
+ 
+-#define DEFAULT_PATH "/bin:/usr/bin:/usr/local/bin:."
++#define DEFAULT_PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ 
+ /* The following define default values for options which can be over-
+    ridden at run time via command-line or configuration files */
+diff --git a/support/Makefile b/support/Makefile
+index d5df3dd..34241af 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -6,7 +6,7 @@ CC= gcc
+ # For ANSI compilers
+ #CC= cc
+ 
+-RM= /bin/rm -f
++RM= rm -f
+ 
+ #For Optimization
+ #CFLAGS= -O2
+diff --git a/support/auth/pgp-dec b/support/auth/pgp-dec
+index 8395bf0..c4d258b 100755
+--- a/support/auth/pgp-dec
++++ b/support/auth/pgp-dec
+@@ -8,7 +8,7 @@ PGPPATH=/X11/robm/httpd/support/auth/pgp-keys
+ # Set this to your user name, the name on your secret key
+ PGPUSER=webmaster@hoohoo.ncsa.uiuc.edu
+ # Set this to the full path to the PGP binary on your system
+-PGPBIN=/usr/bin/pgp
++PGPBIN=pgp
+ 
+ 
+ # You shouldn't need to look at the rest of this mess
+@@ -37,4 +37,4 @@ cd /tmp
+ 
+ $PGPBIN -f -u $PGPUSER < /tmp/pgp.$$/request 2> /dev/null
+ 
+-/bin/rm -rf /tmp/pgp.$$
++rm -rf /tmp/pgp.$$
+diff --git a/support/auth/pgp-enc b/support/auth/pgp-enc
+index b001271..71a1384 100755
+--- a/support/auth/pgp-enc
++++ b/support/auth/pgp-enc
+@@ -7,7 +7,7 @@ PGPPASS=mypassword
+ # Set this to wherever you keep your secret and public keys
+ PGPPATH=/X11/robm/httpd/support/auth/pgp-keys
+ # Set this to the location of the PGP binary on your system
+-PGPBIN=/usr/bin/pgp
++PGPBIN=pgp
+ 
+ # You shouldn't need to edit anything under this line
+ 
+diff --git a/support/auth/ripem-dec b/support/auth/ripem-dec
+index 7353e6e..a0b2ea7 100755
+--- a/support/auth/ripem-dec
++++ b/support/auth/ripem-dec
+@@ -15,7 +15,7 @@ SECKEY=/X11/robm/httpd/htauth/.key-private
+ # Set this to the password to your secret key
+ KEYPASS=mypassword
+ # Set this to the location of your RIPEM executable
+-RIPEMBIN=/usr/bin/ripem
++RIPEMBIN=ripem
+ 
+ # That should be all you need to edit.
+ 
+diff --git a/support/auth/ripem-enc b/support/auth/ripem-enc
+index 84c5eb1..6986ccb 100755
+--- a/support/auth/ripem-enc
++++ b/support/auth/ripem-enc
+@@ -2,7 +2,7 @@
+ 
+ # Set this to the location of uuencode on your system. If your system doesn't
+ # come with uuencode, use the one I have provided.
+-UUENCODE=/bin/uuencode
++UUENCODE=uuencode
+ # Set this to the directory you are keeping your users' public keys in.
+ # You should keep each user's public key in a file in this directory, and the
+ # filename should be that user's entity name.
+@@ -16,7 +16,7 @@ SECKEY=/X11/robm/httpd/htauth/.key-private
+ # Set this to the password to your secret key
+ KEYPASS=mypassword
+ # Set this to the location of your RIPEM executable
+-RIPEMBIN=/usr/bin/ripem
++RIPEMBIN=ripem
+ 
+ $UUENCODE foo | $RIPEMBIN -e -h i -Y f -p $KEYS/"$*" -u $PEMUSER -s $SECKEY -k $KEYPASS -r $*
+ 

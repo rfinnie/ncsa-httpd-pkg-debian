@@ -1,9 +1,10 @@
 Source: ncsa-httpd
 Section: net
-Priority: extra
+Priority: optional
+Homepage: https://en.wikipedia.org/wiki/NCSA_HTTPd
 Maintainer: Ryan Finnie <ryan@finnie.org>
-Build-Depends: debhelper (>= 5), libgdbm-dev
-Standards-Version: 3.7.2
+Build-Depends: debhelper (>= 9), libgdbm-dev, libgdbm-compat-dev
+Standards-Version: 4.1.4
 
 Package: ncsa-httpd
 Architecture: any
@@ -12,3 +13,7 @@ Suggests: perl, tclsh
 Description: NCSA HTTPd, a classic web server
  NCSA HTTPd is an HTTP/1.0 compatible server for making hypertext and other
  documents available to Web browsers.
+ .
+ Note that this software was last updated in 1995, and has only been patched
+ to compile on modern systems. It is full of known vulnerabilities, and
+ SHOULD NOT BE USED ON ANY PUBLIC SYSTEM!

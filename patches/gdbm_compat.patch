@@ -1,0 +1,149 @@
+commit e25271e1ff2b23ce209d04f7d9340c2a34c623d4
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 08:19:43 2017 +0000
+
+    Use gdbm's ndbm compatibility library
+
+diff --git a/src/Makefile b/src/Makefile
+index 381b9b9..0ad58fb 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -71,7 +71,7 @@ DBM_CFLAGS = -DDBM_SUPPORT
+ # Place here any extra libraries you may need to link to. You
+ # shouldn't have to.
+ 
+-EXTRA_LIBS=
++EXTRA_LIBS=-lcrypt -lgdbm_compat
+ 
+ # Place here any flags you may need upon linking, such as a flag to
+ # prevent dynamic linking (if desired)
+diff --git a/src/digest.c b/src/digest.c
+index e29d499..f83efed 100644
+--- a/src/digest.c
++++ b/src/digest.c
+@@ -31,7 +31,7 @@
+ #ifdef DBM_SUPPORT
+ # ifndef _DBMSUPPORT_H  /* moronic OSs which don't protect their own include */
+ #  define _DBMSUPPORT_H  /* files from being multiply included */
+-#  include <ndbm.h>
++#  include <gdbm-ndbm.h>
+ # endif /* _DBMSUPPORT_H */
+ #endif /* DBM_SUPPORT */
+ #include "constants.h"
+diff --git a/src/fdwrap.c b/src/fdwrap.c
+index dd33a81..8016a76 100644
+--- a/src/fdwrap.c
++++ b/src/fdwrap.c
+@@ -30,7 +30,7 @@
+ #ifdef DBM_SUPPORT
+ # ifndef _DBMSUPPORT_H  /* moronic OSs which don't protect their own include */
+ #  define _DBMSUPPORT_H  /* files from being multiply included */
+-#  include <ndbm.h>
++#  include <gdbm-ndbm.h>
+ # endif /* _DBMSUPPORT_H */
+ #endif /* DBM_SUPPORT */
+ #ifndef NO_MALLOC_H
+diff --git a/src/fdwrap.h b/src/fdwrap.h
+index a21644d..4f556c5 100644
+--- a/src/fdwrap.h
++++ b/src/fdwrap.h
+@@ -25,7 +25,7 @@
+ #ifdef DBM_SUPPORT
+ # ifndef _DBMSUPPORT_H  /* moronic OSs which don't protect their own include */
+ #  define _DBMSUPPORT_H  /* files from being multiply included */
+-#  include <ndbm.h>
++#  include <gdbm-ndbm.h>
+ # endif /* _DBMSUPPORT_H */
+ #endif /* DBM_SUPPORT */
+ 
+diff --git a/src/http_auth.c b/src/http_auth.c
+index d294c62..58c06a0 100644
+--- a/src/http_auth.c
++++ b/src/http_auth.c
+@@ -38,7 +38,7 @@
+ #ifdef DBM_SUPPORT
+ # ifndef _DBMSUPPORT_H  /* moronic OSs which don't protect their own include */
+ #  define _DBMSUPPORT_H  /* files from being multiply included */
+-#  include <ndbm.h>
++#  include <gdbm-ndbm.h>
+ # endif /* _DBMSUPPORT_H */
+ #endif /* DBM_SUPPORT */
+ #ifdef NIS_SUPPORT
+diff --git a/src/http_auth.h b/src/http_auth.h
+index 80ce336..b048f33 100644
+--- a/src/http_auth.h
++++ b/src/http_auth.h
+@@ -22,7 +22,7 @@
+ #ifdef DBM_SUPPORT
+ # ifndef _DBMSUPPORT_H
+ #  define _DBMSUPPORT_H
+-#  include <ndbm.h>
++#  include <gdbm-ndbm.h>
+ # endif /* _DBMSUPPORT_H */
+ #endif /* DBM_SUPPORT */
+ #include "global.h"
+diff --git a/support/Makefile b/support/Makefile
+index 26c65eb..d5df3dd 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -49,7 +49,7 @@ hp-gcc:
+ 	make all CC=gcc CFLAGS="-DHPUX" EXTRA_LIBS=-lndbm
+ 
+ linux:
+-	make all CC=gcc CFLAGS="-DLINUX" EXTRA_LIBS=-lgdbm
++	make all CC=gcc CFLAGS="-DLINUX" EXTRA_LIBS="-lgdbm -lgdbm_compat -lcrypt"
+ 
+ netbsd: 
+ 	make all CC=cc CFLAGS="-DNETBSD" EXTRA_LIBS=-lcrypt
+diff --git a/support/dbm2std.c b/support/dbm2std.c
+index c45e310..2dbcd68 100644
+--- a/support/dbm2std.c
++++ b/support/dbm2std.c
+@@ -14,7 +14,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+-#include <ndbm.h>
++#include <gdbm-ndbm.h>
+ 
+ #define MAX_STRING_LEN 256
+ 
+diff --git a/support/dbmgroup.c b/support/dbmgroup.c
+index 73b8760..2796b4c 100644
+--- a/support/dbmgroup.c
++++ b/support/dbmgroup.c
+@@ -24,7 +24,7 @@
+ #include <sys/signal.h>
+ #include <stdlib.h>
+ #include <time.h>
+-#include <ndbm.h>
++#include <gdbm-ndbm.h>
+ #include <fcntl.h>
+ #include <sys/stat.h>
+ 
+diff --git a/support/dbmpasswd.c b/support/dbmpasswd.c
+index 9c596ff..a83fd3d 100644
+--- a/support/dbmpasswd.c
++++ b/support/dbmpasswd.c
+@@ -19,7 +19,7 @@
+ #include <sys/signal.h>
+ #include <stdlib.h>
+ #include <time.h>
+-#include <ndbm.h> 
++#include <gdbm-ndbm.h>
+ #include <fcntl.h>
+ 
+ #define LF 10
+diff --git a/support/std2dbm.c b/support/std2dbm.c
+index 9a2d25c..6779c7e 100644
+--- a/support/std2dbm.c
++++ b/support/std2dbm.c
+@@ -17,7 +17,7 @@
+ # include <stdlib.h>
+ #endif /* NO_STDLIB_H */
+ #include <ctype.h>
+-#include <ndbm.h>
++#include <gdbm-ndbm.h>
+ 
+ #define MAX_STRING_LEN 1024
+ #define CR              13

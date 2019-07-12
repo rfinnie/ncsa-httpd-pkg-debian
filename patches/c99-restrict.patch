@@ -1,0 +1,21 @@
+commit cf4706158a98709c9eac23e2f7d90498c6221277
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 02:29:49 2017 +0000
+
+    Rename restrict to avoid C99 restrict keyword
+
+diff --git a/src/http_access.c b/src/http_access.c
+index f7a4827..8d6e4ba 100644
+--- a/src/http_access.c
++++ b/src/http_access.c
+@@ -183,8 +183,8 @@ int find_host_deny(per_request *reqInfo, int x)
+ /* match_referer()
+  * currently matches restriction with sent for only as long as restricted
+  */
+-int match_referer(char *restrict, char *sent) {
+-  return !(strcmp_match(sent,restrict));
++int match_referer(char *match_restrict, char *sent) {
++  return !(strcmp_match(sent,match_restrict));
+ }
+ 
+ /* find_referer_allow()

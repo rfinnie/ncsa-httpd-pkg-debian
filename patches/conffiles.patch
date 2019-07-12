@@ -1,0 +1,75 @@
+commit ec52e68781517e4a713c7fbe39de2968c2fcd931
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 08:14:48 2017 +0000
+
+    Change default configuration files to work out of the box
+
+diff --git a/conf/httpd.conf-dist b/conf/httpd.conf-dist
+index 6033a07..fb88f18 100644
+--- a/conf/httpd.conf-dist
++++ b/conf/httpd.conf-dist
+@@ -97,14 +97,14 @@ Group nogroup
+ # Default: If you do not specify a ServerName, HTTPd attempts to retrieve
+ #	   it through system calls.
+ 
+-#ServerName new.host.name
++ServerName localhost
+ 
+ # ServerAdmin: Your address, where problems with the server should be
+ # e-mailed.
+ # Valid within <VirtualHost>
+ # Default: <none> (or DEFAULT_ADMIN)
+ 
+-ServerAdmin you@your.address
++ServerAdmin nobody@localhost
+ 
+ #===========================================================================
+ # File Locations
+@@ -261,9 +261,9 @@ DNSMode Standard
+ # You can also specify an error level with this setting, by denoting the 
+ # VirtualHost as Optional or Required.
+ 
+-<VirtualHost 127.0.0.1 Optional>
+-DocumentRoot /local
+-ServerName localhost.ncsa.uiuc.edu
+-ResourceConfig conf/localhost_srm.conf
+-</VirtualHost>
++#<VirtualHost 127.0.0.1 Optional>
++#DocumentRoot /local
++#ServerName localhost.ncsa.uiuc.edu
++#ResourceConfig conf/localhost_srm.conf
++#</VirtualHost>
+ 
+diff --git a/conf/srm.conf-dist b/conf/srm.conf-dist
+index 1d713fb..65fc1c1 100644
+--- a/conf/srm.conf-dist
++++ b/conf/srm.conf-dist
+@@ -49,12 +49,12 @@ ScriptAlias /cgi-bin/ /usr/local/etc/httpd/cgi-bin/
+ # FCGIScritpAlias: Same as ScriptAlias, except for FCGI scripts
+ # Format: FCGIScriptAlias fakename realname
+ 
+-FCGIScriptAlias /fcgi-bin/ /usr/local/etc/httpd/fcgi-devel-kit/examples/
++#FCGIScriptAlias /fcgi-bin/ /usr/local/etc/httpd/fcgi-devel-kit/examples/
+ 
+ # Define the AppClasses. These get hit when requests come in for
+ # /fcgi-bin/tiny-fcgi.fcgi or /fcgi-bin/tiny-fcgi2.fcgi
+-AppClass /usr/local/etc/httpd/fcgi-devel-kit/examples/tiny-fcgi.fcgi -listen-queue-depth 10 -processes 2
+-AppClass /usr/local/etc/httpd/fcgi-devel-kit/examples/tiny-fcgi2.fcgi -listen-queue-depth 10 -processes 2
++#AppClass /usr/local/etc/httpd/fcgi-devel-kit/examples/tiny-fcgi.fcgi -listen-queue-depth 10 -processes 2
++#AppClass /usr/local/etc/httpd/fcgi-devel-kit/examples/tiny-fcgi2.fcgi -listen-queue-depth 10 -processes 2
+ 
+ #===========================================================================
+ # Directory Indexing
+diff --git a/src/config.h b/src/config.h
+index e076db0..8195147 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -149,7 +149,7 @@
+ 
+ #define HTTPD_ROOT "/usr/local/etc/httpd"
+ 
+-#define DOCUMENT_LOCATION "/usr/local/etc/httpd/htdoc"
++#define DOCUMENT_LOCATION "/usr/local/etc/httpd/htdocs"
+ #define DEFAULT_ADMIN "[no address given]"
+ 
+ #define SERVER_CONFIG_FILE "conf/httpd.conf"

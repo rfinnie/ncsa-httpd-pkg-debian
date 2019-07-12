@@ -1,0 +1,22 @@
+commit 94a0749b7aca39ef6e6778ad31efb25402c8bfee
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 08:11:55 2017 +0000
+
+    Change DIR_FILENO from dd_fd to dirfd
+    
+    portability.h:418:29: error: dereferencing pointer to incomplete type ‘DIR {aka struct __dirstream}’
+     #  define DIR_FILENO(p) ((p)->dd_fd)
+
+diff --git a/src/portability.h b/src/portability.h
+index 7f4fc9f..9891e97 100644
+--- a/src/portability.h
++++ b/src/portability.h
+@@ -210,7 +210,7 @@ typedef int mode_t;
+ #endif
+ /* Needed for newer versions of libc (5.2.x) to use FD_LINUX hack */
+ #define DIRENT_ILLEGAL_ACCESS
+-#define DIR_FILENO(p)  ((p)->dd_fd)
++#define DIR_FILENO(p)  dirfd(p)
+ #define CMSG_DATA(cmptr)  ((cmptr)->cmsg_data)
+ #define NEED_SYS_UN_H
+ #undef BSD

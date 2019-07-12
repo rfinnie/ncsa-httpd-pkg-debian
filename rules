@@ -1,61 +1,22 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+%:
+	dh $@
 
-
-
-
-CFLAGS = -Wall -g
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# No configuration needed
-
-	touch configure-stamp
-
-
-build: build-stamp
-
-build-stamp: configure-stamp 
-	dh_testdir
-
-	$(MAKE) linux
-	gcc -Wall support/auth/uuencode.c -o support/auth/uuencode
-	gcc -Wall support/auth/uudecode.c -o support/auth/uudecode
-
-	touch $@
-
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp configure-stamp
-
-	-$(MAKE) clean
+override_dh_auto_clean:
+	$(MAKE) clean
 	rm -f support/auth/uuencode
 	rm -f support/auth/uudecode
+	dh_clean
 
-	dh_clean 
+override_dh_auto_build:
+	$(MAKE) -C src tar AUX_CFLAGS="-DLINUX $(CPPFLAGS) $(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+	$(MAKE) -C cgi-src all CFLAGS="$(CPPFLAGS) $(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+	$(MAKE) -C support all CFLAGS="-DLINUX $(CPPFLAGS) $(CFLAGS)" LDFLAGS="$(LDFLAGS)" EXTRA_LIBS="-lgdbm -lgdbm_compat -lcrypt"
+	$(MAKE) support/auth/uuencode
+	$(MAKE) support/auth/uudecode
 
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k 
-	dh_installdirs
-
+override_dh_auto_install:
 	# httpd binary itself
 	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd
 	install -m 0755 httpd $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/httpd
@@ -68,9 +29,7 @@ install: build
 	cp -R cgi-bin $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/
 	cp -R icons $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/
 
-	# Config files.  All are required (and .conf-dist renamed .conf
-	# accordingly) to start httpd EXCEPT access.conf-dist, so that is
-	# not renamed.
+	# Config files.
 	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf
 	install -m 0644 conf/mime.types $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf/mime.types
 	install -m 0644 conf/access.conf-dist $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/conf/access.conf
@@ -100,32 +59,8 @@ install: build
 	install -m 0755 support/auth/uudecode $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
 	install -m 0755 support/auth/uuencode $(CURDIR)/debian/ncsa-httpd/usr/local/etc/httpd/support/auth
 
+	# Everything else
+	dh_auto_install
 
-	# Lintian overrides
-	install -m 0755 -d $(CURDIR)/debian/ncsa-httpd/usr/share/lintian/overrides
-	install -m 0644 debian/ncsa-httpd.lintian-overrides $(CURDIR)/debian/ncsa-httpd/usr/share/lintian/overrides/ncsa-httpd
-
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs CHANGES
-	dh_installdocs
-	dh_installexamples
-	dh_installman src/httpd.man
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+override_dh_usrlocal:
+	# Lol, no.

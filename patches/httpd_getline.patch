@@ -1,0 +1,469 @@
+commit 45a1775ba57e5e199f8fb21e78d84ce3568ac1fc
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 02:26:39 2017 +0000
+
+    Rename getline() to httpd_getline() to get around implicit _POSIX_C_SOURCE >= 200809L
+
+diff --git a/cgi-src/change-passwd.c b/cgi-src/change-passwd.c
+index fe1dd5a..7e23cfb 100644
+--- a/cgi-src/change-passwd.c
++++ b/cgi-src/change-passwd.c
+@@ -151,7 +151,7 @@ main(int argc, char *argv[]) {
+     }
+ 
+     found = 0;
+-    while(!(getline(line,256,f))) {
++    while(!(httpd_getline(line,256,f))) {
+         if(found || (line[0] == '#') || (!line[0])) {
+             putline(tfp,line);
+             continue;
+diff --git a/cgi-src/imagemap.c b/cgi-src/imagemap.c
+index 9f99c72..4d64f8b 100644
+--- a/cgi-src/imagemap.c
++++ b/cgi-src/imagemap.c
+@@ -41,7 +41,7 @@
+ ** 03/07/95: Carlos Varela, cvarela@ncsa.uiuc.edu
+ **
+ ** 1.8 : Fixed bug (strcat->sprintf) when reporting error.
+-**       Included getline() function from util.c in NCSA httpd distribution.
++**       Included httpd_getline() function from util.c in NCSA httpd distribution.
+ **
+ ** 11/08/95: Brandon Long, blong@ncsa.uiuc.edu
+ **
+@@ -124,7 +124,7 @@ int main(int argc, char **argv)
+        goto openconf;
+     }
+ 
+-    while(!(getline(input,MAXLINE,fp))) {
++    while(!(httpd_getline(input,MAXLINE,fp))) {
+         char confname[MAXLINE];
+         if((input[0] == '#') || (!input[0]))
+             continue;
+@@ -163,7 +163,7 @@ int main(int argc, char **argv)
+         servererr(errstr);
+     }
+ 
+-    while(!(getline(input,MAXLINE,fp))) {
++    while(!(httpd_getline(input,MAXLINE,fp))) {
+         char type[MAXLINE];
+         char url[MAXLINE];
+         char num[10];
+@@ -377,7 +377,7 @@ int isname(char c)
+         return (!isspace(c));
+ }
+ 
+-int getline(char *s, int n, FILE *f) {
++int httpd_getline(char *s, int n, FILE *f) {
+     register int i=0;
+ 
+     while(1) {
+diff --git a/cgi-src/util.c b/cgi-src/util.c
+index c3d5d65..285dcdb 100644
+--- a/cgi-src/util.c
++++ b/cgi-src/util.c
+@@ -95,7 +95,7 @@ int rind(char *s, char c) {
+     return -1;
+ }
+ 
+-int getline(char *s, int n, FILE *f) {
++int httpd_getline(char *s, int n, FILE *f) {
+     register int i=0;
+ 
+     while(1) {
+diff --git a/cgi-src/util.h b/cgi-src/util.h
+index eded336..3b09eca 100644
+--- a/cgi-src/util.h
++++ b/cgi-src/util.h
+@@ -6,7 +6,7 @@ char x2c(char *what);
+ void unescape_url(char *url);
+ void plustospace(char *str);
+ int rind(char *s, char c);
+-int getline(char *s, int n, FILE *f);
++int httpd_getline(char *s, int n, FILE *f);
+ void send_fd(FILE *f, FILE *fd);
+ int ind(char *s, char c);
+ void escape_shell_cmd(char *cmd);
+diff --git a/src/CHANGES b/src/CHANGES
+index 3432366..d0ca29b 100644
+--- a/src/CHANGES
++++ b/src/CHANGES
+@@ -13,7 +13,7 @@
+ 
+ Fixes for 1.5.2
+ ------------------
+-*) Changed getline rfc822 line wrap to check for validity of the next bits
++*) Changed httpd_getline rfc822 line wrap to check for validity of the next bits
+    before attempting to see them
+ *) Changed imagemap.c so relative URLs actually work
+ *) Don't core dump on a method only request
+diff --git a/src/HTTPd_REQ_PATH b/src/HTTPd_REQ_PATH
+index d081916..50ce8fa 100644
+--- a/src/HTTPd_REQ_PATH
++++ b/src/HTTPd_REQ_PATH
+@@ -13,13 +13,13 @@ child_main  			httpd.c
+    free
+  RequestMain			http_request.c
+   signal
+-  getline
++  httpd_getline
+   setproctitle
+   decode_request		http_request.c
+    strtok
+    MapMethod			http_request.c
+    get_mime_headers
+-    getline
++    httpd_getline
+     strchr
+     isspace
+     strcasecmp
+@@ -73,7 +73,7 @@ child_main  			httpd.c
+       stat
+       FOpen			fdwrap.c
+       parse_access_dir		http_config.c
+-       cfg_getline		util.c
++       cfg_httpd_getline		util.c
+        access_syntax_error	http_config.c
+        cfg_getword		util.c
+        add_type			http_mime.c
+@@ -151,11 +151,11 @@ child_main  			httpd.c
+        add_cgi_vars
+        error_log2stderr
+        execle/execve
+-       getline			util.c
++       httpd_getline			util.c
+        write
+        read
+        scan_script_header	cgi.c
+-	getline			util.c
++	httpd_getline			util.c
+ 	strdup
+ 	realloc
+        waitpid
+@@ -167,7 +167,7 @@ child_main  			httpd.c
+ 	 dump_default_header	http_mime.c
+        send_script		cgi.c
+ 	alarm
+-	getline
++	httpd_getline
+ 	write
+ 	read
+        kill_children		cgi.c
+diff --git a/src/cgi.c b/src/cgi.c
+index 4a13a13..52a2c1c 100644
+--- a/src/cgi.c
++++ b/src/cgi.c
+@@ -267,7 +267,7 @@ int scan_cgi_header(per_request *reqInfo, int pd)
+    
+   /* ADC put in the G_SINGLE_CHAR option, so that CGI SSI's would work.  
+    * it was:
+-   * if((ret = getline(reqInfo->cgi_buf,str,HUGE_STRING_LEN-1,0,timeout)) <= 0)
++   * if((ret = httpd_getline(reqInfo->cgi_buf,str,HUGE_STRING_LEN-1,0,timeout)) <= 0)
+    *
+    * This should be cleaned up perhaps so that it only does this if SSI's are
+    * allowed for this script directory.  ZZZZ
+@@ -278,7 +278,7 @@ int scan_cgi_header(per_request *reqInfo, int pd)
+ #endif /* CGI_SSI_HACK */
+ 
+     while(1) {
+-      if((ret = getline(reqInfo->cgi_buf,str,HUGE_STRING_LEN-1,options,timeout)) <= 0)
++      if((ret = httpd_getline(reqInfo->cgi_buf,str,HUGE_STRING_LEN-1,options,timeout)) <= 0)
+       {
+         char error_msg[MAX_STRING_LEN];
+ 	Close(pd);
+@@ -508,7 +508,7 @@ int cgi_stub(per_request *reqInfo, struct stat *finfo, int allow_options)
+       int nDone = 0;
+       
+       signal(SIGPIPE,SIG_IGN);
+-      nBytes=getline(reqInfo->sb, szBuf,HUGE_STRING_LEN,G_FLUSH, timeout);
++      nBytes=httpd_getline(reqInfo->sb, szBuf,HUGE_STRING_LEN,G_FLUSH, timeout);
+       nTotalBytes = nBytes;
+       if (nBytes >= 0) {
+         if (nBytes > 0) write(p2[1], szBuf, nBytes);
+@@ -538,10 +538,10 @@ int cgi_stub(per_request *reqInfo, struct stat *finfo, int allow_options)
+     }
+     
+     /* Previously, this was broken because we read the results of the CGI using
+-     * getline, but the SSI parser used buffered stdio.
++     * httpd_getline, but the SSI parser used buffered stdio.
+      * 
+      * ADC changed scan_cgi_header so that it uses G_SINGLE_CHAR when it
+-     * calls getline.  Yes, this means pitiful performance for CGI scripts.
++     * calls httpd_getline.  Yes, this means pitiful performance for CGI scripts.
+      */
+     /* Fine, parse the output of CGI scripts.  Talk about useless
+      * overhead. . .
+@@ -620,7 +620,7 @@ long send_fd(per_request *reqInfo, int pd, void (*onexit)(void))
+ 
+     alarm(timeout);
+     if (reqInfo->cgi_buf != NULL)
+-      n=getline(reqInfo->cgi_buf, buf,IOBUFSIZE,G_FLUSH,timeout);
++      n=httpd_getline(reqInfo->cgi_buf, buf,IOBUFSIZE,G_FLUSH,timeout);
+      else 
+       n = 0;
+     while (1) {
+diff --git a/src/digest.c b/src/digest.c
+index ba7b0e9..e29d499 100644
+--- a/src/digest.c
++++ b/src/digest.c
+@@ -63,7 +63,7 @@ int get_digest(per_request *reqInfo, char *user, char *realm, char *digest,
+ 		    reqInfo->auth_digestfile);
+ 	    die(reqInfo,SC_SERVER_ERROR,errstr);
+ 	}
+-	while(!(cfg_getline(l,MAX_STRING_LEN,f))) {
++	while(!(cfg_httpd_getline(l,MAX_STRING_LEN,f))) {
+ 	    if((l[0] == '#') || (!l[0])) continue;
+ 	    getword(w,l,':');
+ 	    getword(r,l,':');
+diff --git a/src/fcgi.c b/src/fcgi.c
+index be836ba..dfe01f6 100644
+--- a/src/fcgi.c
++++ b/src/fcgi.c
+@@ -2310,7 +2310,7 @@ static int FastCgiDoWork(WS_Request *reqPtr, FastCgiInfo *infoPtr)
+ 
+     if (nFirst) {
+       char szBuf[IOBUFSIZE];
+-      nBytes=getline(reqPtr->sb, szBuf,IOBUFSIZE,G_FLUSH,0);
++      nBytes=httpd_getline(reqPtr->sb, szBuf,IOBUFSIZE,G_FLUSH,0);
+       BufferAddData(infoPtr->reqInbufPtr, szBuf, nBytes);
+       if (nBytes > 0) {
+ 	BufferAddData(infoPtr->reqInbufPtr, szBuf, nBytes);
+diff --git a/src/http_auth.c b/src/http_auth.c
+index 5139dd5..d294c62 100644
+--- a/src/http_auth.c
++++ b/src/http_auth.c
+@@ -140,7 +140,7 @@ int get_pw(per_request *reqInfo, char *user, char *pw, security_data* sec)
+ 
+     if (reqInfo->auth_pwfile_type == AUTHFILETYPE_STANDARD) { 	
+ 	/* From Conrad Damon (damon@netserver.standford.edu), 	 
+-	   Don't start cfg_getline loop if auth_pwfile is a directory. */
++	   Don't start cfg_httpd_getline loop if auth_pwfile is a directory. */
+ 
+ 	if ((stat (reqInfo->auth_pwfile, &finfo) == -1) ||
+ 	    (!S_ISREG(finfo.st_mode))) {
+@@ -152,7 +152,7 @@ int get_pw(per_request *reqInfo, char *user, char *pw, security_data* sec)
+ 	    sprintf(errstr,"Could not open user file %s",reqInfo->auth_pwfile);
+ 	    die(reqInfo,SC_SERVER_ERROR,errstr); 	
+ 	}
+-	while(!(cfg_getline(l,MAX_STRING_LEN,f))) { 	 
++	while(!(cfg_httpd_getline(l,MAX_STRING_LEN,f))) { 	 
+ 	    if((l[0] == '#') || (!l[0])) 
+ 		continue; 	 
+ 	    getword(w,l,':');
+diff --git a/src/http_config.c b/src/http_config.c
+index 54aee66..0a10236 100644
+--- a/src/http_config.c
++++ b/src/http_config.c
+@@ -186,7 +186,7 @@ void process_server_config(per_host *host, FILE *cfg, FILE *errors,
+   if (!virtual) n=0;
+   
+   /* Parse server config file. Remind me to learn yacc. */
+-  while(!(cfg_getline(l,MAX_STRING_LEN,cfg))) {
++  while(!(cfg_httpd_getline(l,MAX_STRING_LEN,cfg))) {
+     ++n;
+     if((l[0] != '#') && (l[0] != '\0')) {
+       cfg_getword(w,l);
+@@ -541,7 +541,7 @@ void process_resource_config(per_host *host, FILE *open, FILE *errors,
+ 	else return;
+     }
+   } else cfg = open;
+-  while(!(cfg_getline(l,MAX_STRING_LEN,cfg))) {
++  while(!(cfg_httpd_getline(l,MAX_STRING_LEN,cfg))) {
+     ++n;
+     if((l[0] != '#') && (l[0] != '\0')) {
+       cfg_getword(w,l);
+@@ -862,7 +862,7 @@ int parse_access_dir(per_request *reqInfo, FILE *f, int line, char or,
+ 	sec[x].on_deny[i] = NULL;
+     }
+ 
+-    while(!(cfg_getline(l,MAX_STRING_LEN,f))) {
++    while(!(cfg_httpd_getline(l,MAX_STRING_LEN,f))) {
+         ++n;
+         if((l[0] == '#') || (!l[0])) continue;
+         cfg_getword(w,l);
+@@ -1198,7 +1198,7 @@ int parse_access_dir(per_request *reqInfo, FILE *f, int line, char or,
+                 else if(!strcasecmp(w,"DELETE")) m[M_DELETE]=1;
+             }
+             while(1) {
+-                if(cfg_getline(l,MAX_STRING_LEN,f))
++                if(cfg_httpd_getline(l,MAX_STRING_LEN,f))
+                     access_syntax_error(reqInfo,n,"Limit missing /Limit",f,file);
+                 n++;
+                 if((l[0] == '#') || (!l[0])) continue;
+@@ -1393,7 +1393,7 @@ void process_access_config(FILE *errors)
+         perror("fopen");
+         exit(1);
+     }
+-    while(!(cfg_getline(l,MAX_STRING_LEN,f))) {
++    while(!(cfg_httpd_getline(l,MAX_STRING_LEN,f))) {
+         ++n;
+         if((l[0] == '#') || (!l[0])) continue;
+ 	cfg_getword(w,l);
+diff --git a/src/http_mime.c b/src/http_mime.c
+index 0d89048..f1c082a 100644
+--- a/src/http_mime.c
++++ b/src/http_mime.c
+@@ -146,7 +146,7 @@ void init_mime(void)
+     forced_types = NULL;
+     encoding_types = NULL;
+ 
+-    while(!(cfg_getline(l,MAX_STRING_LEN,f))) {
++    while(!(cfg_httpd_getline(l,MAX_STRING_LEN,f))) {
+         if(l[0] == '#') continue;
+         cfg_getword(w,l);
+         if(!(ct = (char *)malloc(sizeof(char) * (strlen(w) + 1))))
+diff --git a/src/http_request.c b/src/http_request.c
+index 57e6808..4a260c1 100644
+--- a/src/http_request.c
++++ b/src/http_request.c
+@@ -484,7 +484,7 @@ void get_http_headers(per_request *reqInfo)
+     char *field_val;
+     int options = 0;
+ 
+-    while(getline(reqInfo->sb,field_type,HUGE_STRING_LEN-1,options,
++    while(httpd_getline(reqInfo->sb,field_type,HUGE_STRING_LEN-1,options,
+ 		  timeout) != -1) {
+ 
+         if(!field_type[0]) 
+@@ -612,7 +612,7 @@ void RequestMain(per_request *reqInfo)
+       sockbuf_count++;
+     }
+ 
+-    if (getline(reqInfo->sb, as_requested, HUGE_STRING_LEN,
++    if (httpd_getline(reqInfo->sb, as_requested, HUGE_STRING_LEN,
+ 		options, timeout) == -1)
+         return;
+ 
+diff --git a/src/rfc822.c b/src/rfc822.c
+index ad13ad0..340081b 100644
+--- a/src/rfc822.c
++++ b/src/rfc822.c
+@@ -3,8 +3,8 @@
+   30-Aug-94 ekr
+ */
+ 
+-/*A wrapper around getline to do rfc822 line unfolding*/
+-int ht_rfc822_getline(char *s,int n,int f,unsigned int timeout)
++/*A wrapper around httpd_getline to do rfc822 line unfolding*/
++int ht_rfc822_httpd_getline(char *s,int n,int f,unsigned int timeout)
+   {
+     static char pb=0;
+     int len;
+@@ -22,7 +22,7 @@ int ht_rfc822_getline(char *s,int n,int f,unsigned int timeout)
+         return(0);
+     }
+    
+-    while(!getline(s,n,f,timeout)){
++    while(!httpd_getline(s,n,f,timeout)){
+       len=strlen(s);
+       s+=len;      
+       n-=len;
+diff --git a/src/util.c b/src/util.c
+index 5e81c52..e9f86a9 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -545,7 +545,7 @@ void http2cgi(char* h, char *w) {
+ 	w++;
+ }
+ 
+-void getline_timed_out(int sig) 
++void httpd_getline_timed_out(int sig) 
+ {
+     char errstr[MAX_STRING_LEN];
+ 
+@@ -582,7 +582,7 @@ sock_buf *new_sock_buf(per_request *reqInfo, int sd)
+  * This routine is currently not thread safe.
+  * This routine may be thread safe. (blong 3/13/96)
+  */
+-int getline(sock_buf *sb, char *s, int n, int options, unsigned int timeout)
++int httpd_getline(sock_buf *sb, char *s, int n, int options, unsigned int timeout)
+ {
+     char *endp = s + n - 1;
+     int have_alarmed = 0;
+@@ -614,7 +614,7 @@ int getline(sock_buf *sb, char *s, int n, int options, unsigned int timeout)
+     do {
+ 	if (sb->buf_posn == sb->buf_good) {
+ 	    have_alarmed = 1;
+-	    signal(SIGALRM,getline_timed_out);
++	    signal(SIGALRM,httpd_getline_timed_out);
+ 	    alarm(timeout);
+ 
+ 	    ret=read(sb->sd, sb->buffer, size);
+@@ -738,7 +738,7 @@ int eat_ws (FILE* fp)
+     return ch;
+ }
+          
+-int cfg_getline (char* s, int n, FILE* fp)
++int cfg_httpd_getline (char* s, int n, FILE* fp)
+ {
+     int   len = 0, ch;
+ 
+diff --git a/src/util.h b/src/util.h
+index 41f78e1..7f2c9d4 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -24,7 +24,7 @@
+ #include <time.h>
+ #include <sys/stat.h>
+ 
+-/* getline options */
++/* httpd_getline options */
+ #define G_RESET_BUF	1
+ #define G_FLUSH		2
+ #define G_SINGLE_CHAR   4
+@@ -49,10 +49,10 @@ void getparents(char *name);
+ void no2slash(char *name);
+ uid_t uname2id(char *name);
+ gid_t gname2id(char *name);
+-int getline(sock_buf *sb, char *s, int n, int options, unsigned int timeout);
++int httpd_getline(sock_buf *sb, char *s, int n, int options, unsigned int timeout);
+ sock_buf *new_sock_buf(per_request *reqInfo, int sd);
+ int eat_ws (FILE* fp);
+-int cfg_getline(char *s, int n, FILE *f);
++int cfg_httpd_getline(char *s, int n, FILE *f);
+ void getword(char *word, char *line, char stop);
+ void splitURL(char *line, char *url, char *args);
+ void cfg_getword(char *word, char *line);
+diff --git a/support/dbmdigest.c b/support/dbmdigest.c
+index 75f22db..44a23b5 100644
+--- a/support/dbmdigest.c
++++ b/support/dbmdigest.c
+@@ -42,7 +42,7 @@ void getword(char *word, char *line, char stop) {
+     while(line[y++] = line[x++]);
+ }
+ 
+-int getline(char *s, int n, FILE *f) {
++int httpd_getline(char *s, int n, FILE *f) {
+     register int i=0;
+ 
+     while(1) {
+@@ -166,7 +166,7 @@ main(int argc, char *argv[]) {
+     strcpy(user,argv[2]);
+ 
+     found = 0;
+-    while(!(getline(line,MAX_STRING_LEN,f))) {
++    while(!(httpd_getline(line,MAX_STRING_LEN,f))) {
+         if(found || (line[0] == '#') || (!line[0])) {
+             putline(tfp,line);
+             continue;
+diff --git a/support/htpasswd.c b/support/htpasswd.c
+index fb3415a..9f1891e 100644
+--- a/support/htpasswd.c
++++ b/support/htpasswd.c
+@@ -45,7 +45,7 @@ void getword(char *word, char *line, char stop) {
+     while(line[y++] = line[x++]);
+ }
+ 
+-int getline(char *s, int n, FILE *f) {
++int httpd_getline(char *s, int n, FILE *f) {
+     register int i=0;
+ 
+     while(1) {
+@@ -163,7 +163,7 @@ main(int argc, char *argv[]) {
+     strcpy(user,argv[2]);
+ 
+     found = 0;
+-    while(!(getline(line,MAX_STRING_LEN,f))) {
++    while(!(httpd_getline(line,MAX_STRING_LEN,f))) {
+         if(found || (line[0] == '#') || (!line[0])) {
+             putline(tfp,line);
+             continue;

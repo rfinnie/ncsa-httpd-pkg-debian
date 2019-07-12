@@ -1,3 +1,15 @@
+ncsa-httpd (1.5.2a-3) unstable; urgency=medium
+
+  * Bring packaging up to current Debian standards
+    * Debhelper 9 + unified dh rules
+    * Split patches into debian/patches/ based on
+      https://github.com/rfinnie/ncsa-httpd
+    * Apply Debian hardening (oh, the irony)
+    * Require libgdbm-compat-dev
+    * Use new debian/copyright format
+
+ -- Ryan Finnie <ryan@finnie.org>  Fri, 12 Jul 2019 03:13:26 +0000
+
 ncsa-httpd (1.5.2a-2) unstable; urgency=medium
 
   * Updates to allow for compilation here in the flying car

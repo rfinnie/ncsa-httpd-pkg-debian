@@ -1,0 +1,179 @@
+commit 3bbe53316178f3aab690e45a2734d1b267fc6901
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 08:17:52 2017 +0000
+
+    Change /usr/local/bin paths
+
+diff --git a/cgi-bin/archie b/cgi-bin/archie
+index ec056df..9287edf 100755
+--- a/cgi-bin/archie
++++ b/cgi-bin/archie
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-ARCHIE=/usr/local/bin/archie
++ARCHIE=/usr/bin/archie
+ 
+ 
+ echo Content-type: text/html
+diff --git a/cgi-bin/finger b/cgi-bin/finger
+index 882ccf3..84f8fb5 100755
+--- a/cgi-bin/finger
++++ b/cgi-bin/finger
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-FINGER=/usr/ucb/finger
++FINGER=/usr/bin/finger
+ 
+ echo Content-type: text/html
+ echo
+diff --git a/cgi-bin/mail b/cgi-bin/mail
+index d223354..55dca19 100755
+--- a/cgi-bin/mail
++++ b/cgi-bin/mail
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/perl 
++#!/usr/bin/perl
+ 
+ # ======================================================================
+ # WebMonitor Standalone Module: mail
+diff --git a/cgi-bin/nph-error.pl b/cgi-bin/nph-error.pl
+index 1f37d4f..73f90d6 100755
+--- a/cgi-bin/nph-error.pl
++++ b/cgi-bin/nph-error.pl
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/perl
++#!/usr/bin/perl
+ #
+ # Non-parsed headers CGI 1.1 error script in Perl to handle error requests
+ # from NCSA HTTPd 1.4 via ErrorDocument.  This should handle all errors in 
+diff --git a/cgi-bin/redirect b/cgi-bin/redirect
+index 1207f92..4ac40d4 100755
+--- a/cgi-bin/redirect
++++ b/cgi-bin/redirect
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/perl 
++#!/usr/bin/perl
+ #
+ # redirect -- PERL redirection script
+ #
+diff --git a/cgi-bin/test-cgi.tcl b/cgi-bin/test-cgi.tcl
+index fbcdd35..18fdb6e 100755
+--- a/cgi-bin/test-cgi.tcl
++++ b/cgi-bin/test-cgi.tcl
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/tclsh
++#!/usr/bin/tclsh
+ # tcl-cgi.tcl
+ # robert.bagwill@nist.gov, no warranty, no rights reserved
+ # print out command line args, stdin, and environment variables
+diff --git a/cgi-bin/uptime b/cgi-bin/uptime
+index c05baea..f56c77d 100755
+--- a/cgi-bin/uptime
++++ b/cgi-bin/uptime
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-UPTIME=/usr/ucb/uptime
++UPTIME=/usr/bin/uptime
+ 
+ echo Content-type: text/plain
+ echo
+diff --git a/cgi-bin/wais.pl b/cgi-bin/wais.pl
+index f3a967f..991d2a7 100755
+--- a/cgi-bin/wais.pl
++++ b/cgi-bin/wais.pl
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/perl
++#!/usr/bin/perl
+ #
+ # wais.pl -- WAIS search interface
+ #
+@@ -10,7 +10,7 @@
+ #     map topdir wais.pl &do_wais($top, $path, $query, "database", "title")
+ #
+ 
+-$waisq = "/usr/local/bin/waisq";
++$waisq = "/usr/bin/waisq";
+ $waisd = "/u/Web/wais-sources";
+ $src = "www";
+ $title = "NCSA httpd documentation";
+diff --git a/cgi-src/phf.c b/cgi-src/phf.c
+index b0e84a5..5f15c90 100644
+--- a/cgi-src/phf.c
++++ b/cgi-src/phf.c
+@@ -181,7 +181,7 @@ main(int argc, char *argv[]) {
+ 
+     if (!atleastonequery) printf("<B>You did not enter a query!</B>%c",LF);
+     else {
+-        strcpy(commandstr, "/usr/local/bin/ph -m ");
++        strcpy(commandstr, "/usr/bin/ph -m ");
+         if (strlen(serverstr)) {
+            strcat(commandstr, " -s ");
+            /* RM 2/22/94 oops */
+diff --git a/src/config.h b/src/config.h
+index 8195147..c3f6db4 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -142,7 +142,7 @@
+ /* DEFAULT_PATH defines the default search PATH handed to CGI scripts
+    if there isn't one in the environment when HTTPd runs */
+ 
+-#define DEFAULT_PATH "/bin:/usr/bin:/usr/ucb:/usr/bsd:/usr/local/bin:."
++#define DEFAULT_PATH "/bin:/usr/bin:/usr/local/bin:."
+ 
+ /* The following define default values for options which can be over-
+    ridden at run time via command-line or configuration files */
+diff --git a/support/auth/pgp-dec b/support/auth/pgp-dec
+index 52a40e2..8395bf0 100755
+--- a/support/auth/pgp-dec
++++ b/support/auth/pgp-dec
+@@ -8,7 +8,7 @@ PGPPATH=/X11/robm/httpd/support/auth/pgp-keys
+ # Set this to your user name, the name on your secret key
+ PGPUSER=webmaster@hoohoo.ncsa.uiuc.edu
+ # Set this to the full path to the PGP binary on your system
+-PGPBIN=/usr/local/bin/pgp
++PGPBIN=/usr/bin/pgp
+ 
+ 
+ # You shouldn't need to look at the rest of this mess
+diff --git a/support/auth/pgp-enc b/support/auth/pgp-enc
+index 5cacea0..b001271 100755
+--- a/support/auth/pgp-enc
++++ b/support/auth/pgp-enc
+@@ -7,7 +7,7 @@ PGPPASS=mypassword
+ # Set this to wherever you keep your secret and public keys
+ PGPPATH=/X11/robm/httpd/support/auth/pgp-keys
+ # Set this to the location of the PGP binary on your system
+-PGPBIN=/usr/local/bin/pgp
++PGPBIN=/usr/bin/pgp
+ 
+ # You shouldn't need to edit anything under this line
+ 
+diff --git a/support/auth/ripem-dec b/support/auth/ripem-dec
+index db5da0d..7353e6e 100755
+--- a/support/auth/ripem-dec
++++ b/support/auth/ripem-dec
+@@ -15,7 +15,7 @@ SECKEY=/X11/robm/httpd/htauth/.key-private
+ # Set this to the password to your secret key
+ KEYPASS=mypassword
+ # Set this to the location of your RIPEM executable
+-RIPEMBIN=/usr/local/bin/ripem
++RIPEMBIN=/usr/bin/ripem
+ 
+ # That should be all you need to edit.
+ 
+diff --git a/support/auth/ripem-enc b/support/auth/ripem-enc
+index b7bbe08..84c5eb1 100755
+--- a/support/auth/ripem-enc
++++ b/support/auth/ripem-enc
+@@ -16,7 +16,7 @@ SECKEY=/X11/robm/httpd/htauth/.key-private
+ # Set this to the password to your secret key
+ KEYPASS=mypassword
+ # Set this to the location of your RIPEM executable
+-RIPEMBIN=/usr/local/bin/ripem
++RIPEMBIN=/usr/bin/ripem
+ 
+ $UUENCODE foo | $RIPEMBIN -e -h i -Y f -p $KEYS/"$*" -u $PEMUSER -s $SECKEY -k $KEYPASS -r $*
+ 

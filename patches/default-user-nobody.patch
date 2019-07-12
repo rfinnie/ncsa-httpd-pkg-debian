@@ -1,0 +1,46 @@
+commit 9f9f39bd93b32738002c21d4f6f527ec846b5eb6
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Mon May 22 03:06:58 2017 +0000
+
+    Set default user/group to nobody/nogroup
+    
+    Default group used to be "#-1".  When trying this, it works out to
+    initgroups("nobody", -1) and setgroups(1, [4294967295]) which returned
+    EINVAL and crashes.  Best we can tell, -1 is a hack which used to work
+    way back when, but isn't a documented feature.
+    
+    Setting the default to nobody/nogroup isn't very portable (did AIX use
+    nogroup or nobody???), but hey, most Linux distros use that.
+
+diff --git a/conf/httpd.conf-dist b/conf/httpd.conf-dist
+index dc96e72..6033a07 100644
+--- a/conf/httpd.conf-dist
++++ b/conf/httpd.conf-dist
+@@ -64,10 +64,10 @@ TimeOut 1200
+ # If you wish HTTPd to run as a different user or group, you must run
+ # HTTPd as root initially and it will switch.  
+ # User/Group: The name (or #number) of the user/group to run HTTPd as.
+-# Default: #-1 (or DEFAULT_USER / DEFAULT_GROUP)
++# Default: nobody / nogroup (or DEFAULT_USER / DEFAULT_GROUP)
+ 
+ User nobody
+-Group #-1
++Group nogroup
+ 
+ # IdentityCheck: Enables or disables RFC931 compliant logging of the 
+ # remote user name for sites which run identd or something similar. 
+diff --git a/src/config.h b/src/config.h
+index e8973d5..e076db0 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -158,8 +158,8 @@
+ #define ACCESS_CONFIG_FILE "conf/access.conf"
+ 
+ #define DEFAULT_PORT 80
+-#define DEFAULT_USER "#-1"
+-#define DEFAULT_GROUP "#-1"
++#define DEFAULT_USER "nobody"
++#define DEFAULT_GROUP "nogroup"
+ 
+ #define DEFAULT_XFERLOG "logs/access_log"
+ #define DEFAULT_AGENTLOG "logs/agent_log"

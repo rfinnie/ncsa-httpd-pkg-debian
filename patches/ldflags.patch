@@ -1,0 +1,139 @@
+commit d909f1f5be3156a8d580973fcc02e89f43e72804
+Author: Ryan Finnie <ryan@finnie.org>
+Date:   Thu Jul 11 19:51:40 2019 -0700
+
+    Allow LDFLAGS everywhere
+
+diff --git a/cgi-src/Makefile b/cgi-src/Makefile
+index 3c5a758..cb477a7 100644
+--- a/cgi-src/Makefile
++++ b/cgi-src/Makefile
+@@ -62,22 +62,22 @@ ultrix:
+ 	make all CC=gcc
+ 
+ post-query: post-query.o util.o
+-	$(CC) post-query.o util.o -o ../cgi-bin/post-query
++	$(CC) post-query.o util.o -o ../cgi-bin/post-query $(LDFLAGS)
+ 
+ query: query.o util.o
+-	$(CC) query.o util.o -o ../cgi-bin/query
++	$(CC) query.o util.o -o ../cgi-bin/query $(LDFLAGS)
+ 
+ imagemap: imagemap.o
+-	$(CC) imagemap.o -o ../cgi-bin/imagemap
++	$(CC) imagemap.o -o ../cgi-bin/imagemap $(LDFLAGS)
+ 
+ jj: jj.o util.o
+-	$(CC) jj.o util.o -o ../cgi-bin/jj
++	$(CC) jj.o util.o -o ../cgi-bin/jj $(LDFLAGS)
+ 
+ phf: phf.o util.o
+-	$(CC) phf.o util.o -o ../cgi-bin/phf
++	$(CC) phf.o util.o -o ../cgi-bin/phf $(LDFLAGS)
+ 
+ change-passwd: change-passwd.o util.o
+-	$(CC) change-passwd.o util.o -o ../sec-cgi/change-passwd
++	$(CC) change-passwd.o util.o -o ../sec-cgi/change-passwd $(LDFLAGS)
+ 
+ clean:
+ 	rm -f *.o ../cgi-bin/post-query ../cgi-bin/query ../sec-cgi/change-passwd ../cgi-bin/phf ../cgi-bin/jj ../cgi-bin/imagemap
+diff --git a/src/Makefile b/src/Makefile
+index 0ad58fb..069a4d9 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -75,7 +75,7 @@ EXTRA_LIBS=-lcrypt -lgdbm_compat
+ 
+ # Place here any flags you may need upon linking, such as a flag to
+ # prevent dynamic linking (if desired)
+-LFLAGS=  # -pg -DPROFILE
++LDFLAGS=  # -pg -DPROFILE
+ 
+ # AUX_CFLAGS are system-specific control flags.
+ # NOTE: IF YOU DO NOT CHOOSE ONE OF THESE, EDIT portability.h AND CHOOSE
+@@ -223,22 +223,22 @@ ultrix:
+ 	make tar AUX_CFLAGS=-DULTRIX CC=gcc CFLAGS=-O2
+ 
+ httpd: $(OBJS)
+-	$(CC) $(LFLAGS) -o httpd $(OBJS) $(ALL_LIBS)
++	$(CC) $(LDFLAGS) -o httpd $(OBJS) $(ALL_LIBS)
+ 
+ #	-logfile=/X11/blong/httpd/logs/pure_log 
+ purify: $(OBJS)
+ 	$(PURIFY) -program-name=/X11/blong/httpd/src/httpd \
+ 	          -follow-child-processes=yes \
+-	$(CC) $(LFLAGS) -o httpd $(OBJS) $(ALL_LIBS) 
++	$(CC) $(LDFLAGS) -o httpd $(OBJS) $(ALL_LIBS) 
+ 
+ quantify: $(OBJS)
+ 	$(QUANTIFY) -record-child-process-data=yes \
+ 		    -record-data=no \
+ 	            -avoid-recording-system-calls=1,6,93,113,114 \
+-	$(CC) $(LFLAGS) -o httpd $(OBJS) $(ALL_LIBS) 
++	$(CC) $(LDFLAGS) -o httpd $(OBJS) $(ALL_LIBS) 
+ 
+ tar: $(OBJS)
+-	$(CC) $(LFLAGS) -o ../httpd $(OBJS) $(ALL_LIBS) 
++	$(CC) $(LDFLAGS) -o ../httpd $(OBJS) $(ALL_LIBS) 
+ 
+ 
+ http_access.o:  Makefile config.h portability.h constants.h http_access.h \
+@@ -308,4 +308,4 @@ codecenter:
+ 	#setopt ansi
+ 	#setopt print_string 128
+ 	#setopt load_flags $(ALL_FLAGS) 
+-	#load $(LFLAGS) $(SRC) $(ALL_LIBS) 
++	#load $(LDFLAGS) $(SRC) $(ALL_LIBS) 
+diff --git a/support/Makefile b/support/Makefile
+index 34241af..fe7548e 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -83,19 +83,19 @@ ultrix:
+ 	make all CC=gcc CFLAGS="-DULTRIX"
+ 
+ htpasswd: htpasswd.c
+-	$(CC) $(CFLAGS) $(INCLUDES) htpasswd.c -o htpasswd $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) $(INCLUDES) htpasswd.c -o htpasswd $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ dbmpasswd: dbmpasswd.c
+-	$(CC) $(CFLAGS) $(INCLUDES) dbmpasswd.c -o dbmpasswd $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) $(INCLUDES) dbmpasswd.c -o dbmpasswd $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ dbmgroup: dbmgroup.c
+-	$(CC) $(CFLAGS) $(INCLUDES) dbmgroup.c -o dbmgroup $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) $(INCLUDES) dbmgroup.c -o dbmgroup $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ std2dbm: std2dbm.c
+-	$(CC) $(CFLAGS) $(INCLUDES) std2dbm.c -o std2dbm $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) $(INCLUDES) std2dbm.c -o std2dbm $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ dbm2std: dbm2std.c
+-	$(CC) $(CFLAGS) $(INCLUDES) dbm2std.c -o dbm2std $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) $(INCLUDES) dbm2std.c -o dbm2std $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ 
+ DIGESTOBJS=../src/md5.o ../src/md5c.o
+@@ -106,19 +106,19 @@ DIGESTOBJS=../src/md5.o ../src/md5c.o
+ 	$(CC) $(CFLAGS) $(INCLUDES) -c ../src/md5c.c -o ../src/md5c.o 
+ 
+ htdigest: $(DIGESTOBJS) htdigest.o  ../src/md5.h
+-	$(CC) $(CFLAGS) -o htdigest htdigest.o $(DIGESTOBJS) $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) -o htdigest htdigest.o $(DIGESTOBJS) $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ dbmdigest: $(DIGESTOBJS) dbmdigest.o ../src/md5.h
+-	$(CC) $(CFLAGS) -o dbmdigest dbmdigest.o $(DIGESTOBJS) $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) -o dbmdigest dbmdigest.o $(DIGESTOBJS) $(LDFLAGS) $(EXTRA_LIBS)
+ 
+ unescape: unescape.c
+-	$(CC) $(CFLAGS) $(INCLUDES) unescape.c -o unescape
++	$(CC) $(CFLAGS) $(INCLUDES) unescape.c -o unescape $(LDFLAGS)
+ 
+ inc2shtml: inc2shtml.c
+-	$(CC) $(CFLAGS) $(INCLUDES) inc2shtml.c -o inc2shtml
++	$(CC) $(CFLAGS) $(INCLUDES) inc2shtml.c -o inc2shtml $(LDFLAGS)
+ 
+ webgrab: webgrab.c
+-	$(CC) $(CFLAGS) $(INCLUDES) webgrab.c -o webgrab $(EXTRA_LIBS)
++	$(CC) $(CFLAGS) $(INCLUDES) webgrab.c -o webgrab $(LDFLAGS) $(EXTRA_LIBS)
+ clean:
+ 	rm -f $(SUPPORT) $(DIGESTOBJS) tags TAGS *.o
+ 
